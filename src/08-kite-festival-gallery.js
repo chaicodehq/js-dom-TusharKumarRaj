@@ -80,20 +80,121 @@
  */
 export function renderKiteCard(kite) {
   // Your code here
+
+  if(!kite || !kite.name || !kite.color || !kite.size || !kite.maker || !kite.image)
+    return null
+
+  const container = document.createElement("div")
+  container.classList.add("kite-card")
+
+  const image = document.createElement("img")
+  image.src = kite.image
+  image.alt = kite.name
+
+  const nameElement = document.createElement("h3")
+  nameElement.classList.add("kite-name")
+  nameElement.textContent = kite.name
+
+  const makerElement = document.createElement("p")
+  makerElement.classList.add("kite-maker")
+  makerElement.textContent = "by " + kite.maker
+
+  const infoElement = document.createElement("p")
+  infoElement.classList.add("kite-info")
+  infoElement.textContent = kite.size + " - " + kite.color
+
+  container.appendChild(image)
+  container.appendChild(nameElement)
+  container.appendChild(makerElement)
+  container.appendChild(infoElement)
+
+  return container
 }
+
+
 
 export function renderGallery(container, kites) {
   // Your code here
+
+  if(!container || !Array.isArray(kites))
+    return -1
+
+  container.innerHTML = ""
+
+  let count = 0
+
+  for(let i=0;i<kites.length;i++){
+
+    const card = renderKiteCard(kites[i])
+
+    if(card){
+      container.appendChild(card)
+      count++
+    }
+
+  }
+
+  return count
 }
+
+
 
 export function filterKites(container, kites, filterFn) {
   // Your code here
+
+  if(!container || !Array.isArray(kites) || typeof(filterFn) !== "function")
+    return -1
+
+  const filtered = kites.filter(filterFn)
+
+  return renderGallery(container, filtered)
 }
+
+
 
 export function sortAndRender(container, kites, sortField, order) {
   // Your code here
+
+  if(!container || !Array.isArray(kites))
+    return []
+
+  const copy = [...kites]
+
+  const sortOrder = order === "desc" ? -1 : 1
+
+  copy.sort((a,b) => {
+
+    if(a[sortField] < b[sortField]) return -1 * sortOrder
+    if(a[sortField] > b[sortField]) return 1 * sortOrder
+    return 0
+
+  })
+
+  renderGallery(container, copy)
+
+  return copy
 }
+
+
 
 export function renderEmptyState(container, message) {
   // Your code here
+
+  if(!container)
+    return false
+
+  if(container.children.length === 0){
+
+    const element = document.createElement("p")
+    element.classList.add("empty-state")
+    element.textContent = message
+
+    container.appendChild(element)
+
+    return true
+  }
+
+  return false
+
+  
 }

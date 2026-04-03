@@ -68,12 +68,190 @@
  */
 export function setupGuestList(containerElement) {
   // Your code here
+
+  if(!containerElement)
+    return null
+
+  function handler(event){
+
+    const button = event.target.closest(".remove-btn")
+
+    if(button){
+
+      const item = button.closest(".guest-item")
+
+      if(item)
+        containerElement.removeChild(item)
+
+    }
+
+  }
+
+  containerElement.addEventListener("click", handler)
+
+  return {
+
+    addGuest(name, side){
+
+      const item = document.createElement("div")
+      item.classList.add("guest-item")
+      item.setAttribute("data-name", name)
+      item.setAttribute("data-side", side)
+
+      const span = document.createElement("span")
+      span.textContent = name
+
+      const button = document.createElement("button")
+      button.classList.add("remove-btn")
+      button.textContent = "Remove"
+
+      item.appendChild(span)
+      item.appendChild(button)
+
+      containerElement.appendChild(item)
+
+      return item
+    },
+
+    removeGuest(name){
+
+      const items = containerElement.querySelectorAll(".guest-item")
+
+      for(let i=0;i<items.length;i++){
+
+        if(items[i].getAttribute("data-name") === name){
+
+          containerElement.removeChild(items[i])
+          return true
+
+        }
+
+      }
+
+      return false
+    },
+
+    getGuests(){
+
+      const items = containerElement.querySelectorAll(".guest-item")
+
+      const result = []
+
+      for(let i=0;i<items.length;i++){
+
+        result.push({
+          name: items[i].getAttribute("data-name"),
+          side: items[i].getAttribute("data-side")
+        })
+
+      }
+
+      return result
+    }
+
+  }
 }
+
+
 
 export function setupThemeSelector(containerElement, previewElement) {
   // Your code here
+
+  if(!containerElement || !previewElement)
+    return null
+
+  const themes = ["traditional","modern","royal"]
+
+  for(let i=0;i<themes.length;i++){
+
+    const button = document.createElement("button")
+    button.classList.add("theme-btn")
+    button.textContent = themes[i]
+    button.setAttribute("data-theme", themes[i])
+
+    containerElement.appendChild(button)
+
+  }
+
+  function handler(event){
+
+    const button = event.target.closest(".theme-btn")
+
+    if(button){
+
+      const theme = button.getAttribute("data-theme")
+
+      previewElement.className = theme
+      previewElement.setAttribute("data-theme", theme)
+
+    }
+
+  }
+
+  containerElement.addEventListener("click", handler)
+
+  return {
+
+    getTheme(){
+
+      return previewElement.getAttribute("data-theme") || null
+    }
+
+  }
 }
+
+
 
 export function setupCardEditor(cardElement) {
   // Your code here
+
+  if(!cardElement)
+    return null
+
+  function clearEditing(){
+
+    const current = cardElement.querySelector(".editing")
+
+    if(current){
+      current.classList.remove("editing")
+      current.contentEditable = "false"
+    }
+
+  }
+
+  function handler(event){
+
+    const editable = event.target.closest("[data-editable]")
+
+    if(editable && cardElement.contains(editable)){
+
+      clearEditing()
+
+      editable.contentEditable = "true"
+      editable.classList.add("editing")
+
+    }else if(event.target === cardElement){
+
+      clearEditing()
+
+    }
+
+  }
+
+  cardElement.addEventListener("click", handler)
+
+  return {
+
+    getContent(field){
+
+      const element = cardElement.querySelector(`[data-editable="${field}"]`)
+
+      if(!element)
+        return null
+
+      return element.textContent
+    }
+
+  }
+  
 }
